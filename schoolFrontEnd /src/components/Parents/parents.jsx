@@ -17,7 +17,14 @@ const StudentsData = () => {
   useEffect(() => {
     const fetchParents = async () => {
       try {
-        const response =await axios.get(`http://localhost:3000/parents/${pageNumber}`);
+        // localStorage.setItem('token', token);
+
+        const response = await axios.get(`http://localhost:3000/parents/${pageNumber}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          }
+        });
+        
         console.log(response.data)
         // Ensure the response is an array
         if (Array.isArray(response.data.data)) {

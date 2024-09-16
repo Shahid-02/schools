@@ -12,7 +12,11 @@ const TeacherData = () => {
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/teacher");
+        const response = await axios.get("http://localhost:3000/teacher" , {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          }
+        });
         console.log(response.data);
 
         // Ensure the response is an array of objects

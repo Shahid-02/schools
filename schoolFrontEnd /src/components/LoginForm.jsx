@@ -27,11 +27,11 @@ const LoginForm = () => {
         email,
         password,
       });
-
-        //  const token = response.data.data.token
-
-      if (response.data && response.data.data.admin && response.data.data.admin.email === email) {
-        // localStorage.setItem('token', token);
+   
+    
+    if (response.data && response.data.data.admin && response.data.data.admin.email === email) {
+        const token = response.data.data.token
+        localStorage.setItem('token', token);
         setIsLoading(false);
         navigate('/dashboard');
       } else {

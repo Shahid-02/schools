@@ -50,12 +50,12 @@ export class StudentsController {
   // }
 
   @Patch('/:id')
-  update(@Param('id') id: string, @Body() updateStudentDto: UpdateStudentDto) {
-    return this.studentsService.update(+id, updateStudentDto);
+  update(@Param('id') id: number, @Body() updateStudentDto: UpdateStudentDto) {
+    return this.studentsService.update(id, updateStudentDto);
   }
 
   @Delete('/:id')
-  remove(@Param('id') id: string) {
-    return this.studentsService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.studentsService.remove(id);
   }
 }

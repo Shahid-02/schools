@@ -17,9 +17,10 @@ import { RedisModule } from './redis/redis.module';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
-import { AuthMiddleware } from './middlerware/Authmiddlerware';
 import { Teacher } from './teacher/entities/teacher.entity';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { AuthModule } from './middlerware/auth/auth.module';
+import { AuthService } from './middlerware/auth/auth.service';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     AdminModule,
     RedisModule,
     CloudinaryModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [
@@ -61,18 +63,18 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     },
   ],
 })
-export class RootModule {}
-// export class RootModule implements NestModule {
-//   configure(consumer: MiddlewareConsumer) {
-//     consumer
-//       .apply(AuthMiddleware)
-//       .exclude(
-//         { path: 'admin/register', method: RequestMethod.POST },
-//         {
-//           path: 'admin/login',
-//           method: RequestMethod.POST,
-//         },
-//       )
-//       .forRoutes('*');
-//   }
-// }
+// export class RootModule {}
+export class RootModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthService)
+      .exclude(
+        { path: 'admin/register', method: RequestMethod.POST },
+        {
+          path: 'admin/login',
+          method: RequestMethod.POST,
+        },
+      )
+      .forRoutes('*');
+  }
+}

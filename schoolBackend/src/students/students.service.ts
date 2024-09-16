@@ -21,7 +21,7 @@ export class StudentsService {
         await this.studentRepository.save(student);
 
         const cachedDataDelete = this.redisService.getClient();
-        cachedDataDelete.del('students_with_parents');
+        cachedDataDelete.del('students_with_parents_page');
 
         return {
           message: 'Student created successfully',
@@ -91,17 +91,15 @@ export class StudentsService {
       const limit = 10;
       const offset = (pageNumber - 1) * limit;
 
-      // // Check cache first
-      // const cachedData = await client.get(
-      //   `students_with_parents_page_${pageNumber}`,
-      // );
-      // if (cachedData) {
-      //   return {
-      //     message:
-      //       'Students and Parents Data Fetched Successfully (from cache)',
-      //     data: JSON.parse(cachedData),
-      //   };
-      // }
+      // Check cache first
+      const cachedData = await client.get(`students_with_parents_page`);
+      if (cachedData) {
+        return {
+          message:
+            'Students and Parents Data Fetched Successfully (from cache)',
+          data: JSON.parse(cachedData),
+        };
+      }
 
       // Fetch paginated data from the database
       const [studentsWithParents, total] =
@@ -115,7 +113,7 @@ export class StudentsService {
       if (studentsWithParents && studentsWithParents.length > 0) {
         // Cache the data for future requests
         await client.set(
-          `students_with_parents_page_${pageNumber}`,
+          `students_with_parents_page`,
           JSON.stringify(studentsWithParents),
           'EX',
           3600, // Cache expiry set to 1 hour
@@ -155,6 +153,10 @@ export class StudentsService {
         });
 
         if (updatedStudent) {
+          const cachedData = this.redisService.getClient();
+
+          await cachedData.del(`students_with_parents_page`);
+
           return {
             message: 'Student updated successfully',
             data: updatedStudent,
